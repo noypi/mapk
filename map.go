@@ -15,7 +15,7 @@ type IMap interface {
 }
 
 func Map(comp func(a, b interface{}) int) IMap {
-	return MapGtreap(comp)
+	return MapSlice(comp)
 }
 
 func CmpString(a, b interface{}) int {
