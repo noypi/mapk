@@ -104,6 +104,12 @@ func benchmap_eachfrompartial7of10(m mapk.IMap) {
 	})
 }
 
+func benchmap_eachten(m mapk.IMap) {
+	m.Each(func(a, b interface{}) bool {
+		return true
+	})
+}
+
 func benchmap_delete5of10(m mapk.IMap) {
 	m.Delete("sa1")
 	m.Delete("se10")
@@ -149,6 +155,17 @@ func BenchmarkEachFrom7of10_GTreap(b *testing.B) {
 	}
 }
 
+func BenchmarkEachTen_GTreap(b *testing.B) {
+	m := mapk.MapGTreap(func(a, b interface{}) int {
+		return strings.Compare(a.(string), b.(string))
+	})
+	benchmap_putten(m)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		benchmap_eachten(m)
+	}
+}
+
 func BenchmarkDeleteAdd5of10_GTreap(b *testing.B) {
 	m := mapk.MapGTreap(func(a, b interface{}) int {
 		return strings.Compare(a.(string), b.(string))
@@ -189,6 +206,17 @@ func BenchmarkEachFrom7of10_Slice(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		benchmap_eachfrompartial7of10(m)
+	}
+}
+
+func BenchmarkEachTen_Slice(b *testing.B) {
+	m := mapk.MapSlice(func(a, b interface{}) int {
+		return strings.Compare(a.(string), b.(string))
+	})
+	benchmap_putten(m)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		benchmap_eachten(m)
 	}
 }
 
@@ -249,5 +277,24 @@ func BenchmarkDeleteAdd5of10_Native(b *testing.B) {
 		m["se6"] = "1"
 		m["sd5"] = "1"
 		m["sb3"] = "1"
+	}
+}
+
+func BenchmarkEachFrom_Native_NOT_SUPPORTED(b *testing.B) {
+}
+
+func BenchmarkEachTen_Native(b *testing.B) {
+	m := map[string]string{}
+	for i := 0; i < b.N; i++ {
+		for _, v := range ttDataTen01 {
+			m[v.k] = v.v
+		}
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for _, _ = range m {
+
+		}
 	}
 }
