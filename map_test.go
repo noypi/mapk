@@ -73,6 +73,22 @@ func TestMap01_Slice(t *testing.T) {
 	testmap01(m, t)
 }
 
+func TestMap01_ThreadSafe_Slice(t *testing.T) {
+	m := mapk.MapSlice(func(a, b interface{}) int {
+		return strings.Compare(a.(string), b.(string))
+	})
+
+	testmap01(mapk.MakeThreadSafe(m), t)
+}
+
+func TestMap01_ThreadSafe_GTreap(t *testing.T) {
+	m := mapk.MapGTreap(func(a, b interface{}) int {
+		return strings.Compare(a.(string), b.(string))
+	})
+
+	testmap01(mapk.MakeThreadSafe(m), t)
+}
+
 var ttDataTen01 = []_kv{
 	_kv{"sa1", "v100"},
 	_kv{"sa2", "v100"},
