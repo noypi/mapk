@@ -82,4 +82,9 @@ func (this _SliceMap) Each(cb func(k, v interface{}) bool) {
 		}
 	}
 }
+
+func (this *_SliceMap) Clear() {
+	this.kvs = this.kvs[:0]
+}
+
 func (this _SliceMap) Len() int { return len(this.kvs) }

@@ -9,9 +9,8 @@ import (
 
 func MapGTreap(comp func(a, b interface{}) int) *_GtreapMap {
 	o := new(_GtreapMap)
-	o.m = gtreap.NewTreap(func(a, b interface{}) int {
-		return comp(a.(*_kv).k, b.(*_kv).k)
-	})
+	o.cmp = comp
+	o.Clear()
 	return o
 }
 
@@ -56,6 +55,13 @@ func (this _GtreapMap) EachFrom(kprefix interface{}, cb func(k, v interface{}) b
 	})
 }
 
+func (this *_GtreapMap) Clear() {
+	this.m = gtreap.NewTreap(func(a, b interface{}) int {
+		return this.cmp(a.(*_kv).k, b.(*_kv).k)
+	})
+	atomic.StoreInt64(&this.count, 0)
+}
+
 func (this _GtreapMap) Each(cb func(k, v interface{}) bool) {
 	if 0 == atomic.LoadInt64(&this.count) {
 		return
@@ -65,5 +71,6 @@ func (this _GtreapMap) Each(cb func(k, v interface{}) bool) {
 
 type _GtreapMap struct {
 	m     *gtreap.Treap
+	cmp   func(a, b interface{}) int
 	count int64
 }

@@ -12,6 +12,7 @@ type IMap interface {
 	EachFrom(kprefix interface{}, cb func(k, v interface{}) bool)
 	Each(cb func(k, v interface{}) bool)
 	Len() int
+	Clear()
 }
 
 func Map(comp func(a, b interface{}) int) IMap {

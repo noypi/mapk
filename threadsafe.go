@@ -55,6 +55,13 @@ func (this *_threadsafe) Each(cb func(k, v interface{}) bool) {
 	this.m.Each(cb)
 }
 
+func (this *_threadsafe) Clear() {
+	this.l.Lock()
+	defer this.l.Unlock()
+
+	this.m.Clear()
+}
+
 func (this *_threadsafe) Len() int {
 	this.l.RLock()
 	defer this.l.RUnlock()
