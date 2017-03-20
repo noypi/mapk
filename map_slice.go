@@ -34,16 +34,29 @@ func (this _SliceMap) Get(k interface{}) interface{} {
 }
 
 func (this *_SliceMap) Put(k, v interface{}) {
-	if 0 < len(this.kvs) {
-		i := this.find(k)
-		if i < len(this.kvs) {
-			this.kvs[i].v = v
-			return
-		}
+	if 0 == len(this.kvs) {
+		this.kvs = append(this.kvs, &_kv{k: k, v: v})
+		return
 	}
 
-	this.kvs = append(this.kvs, &_kv{k: k, v: v})
-	sort.Slice(this.kvs, this.less)
+	i := this.find(k)
+	if i < len(this.kvs) {
+		this.kvs[i].v = v
+		return
+	}
+
+	i = sort.Search(len(this.kvs), func(i int) bool {
+		return 0 < this.cmp(this.kvs[i].k, k)
+	})
+	if i < len(this.kvs) {
+		// insert at
+		i = i + 1
+		this.kvs = append(this.kvs[:i], append(_kvslist{&_kv{k: k, v: v}}, this.kvs[i:]...)...)
+	} else {
+		this.kvs = append(this.kvs, &_kv{k: k, v: v})
+	}
+
+	//sort.Slice(this.kvs, this.less)
 }
 
 func (this *_SliceMap) Delete(k interface{}) {

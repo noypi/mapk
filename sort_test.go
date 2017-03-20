@@ -17,7 +17,13 @@ func testSortHundred(m IMap, t *testing.T, nsize, ranlen int) {
 	sorted := []int{}
 	for i := 0; i < nsize; i++ {
 		n := rand.Intn(ranlen)
+		has := m.Has(n)
 		m.Put(n, s)
+		if !has {
+			assert.Equal(nPrevSize+1, m.Len())
+		} else {
+			assert.Equal(nPrevSize, m.Len())
+		}
 		if nPrevSize != m.Len() {
 			nPrevSize = m.Len()
 			sorted = append(sorted, n)
@@ -39,13 +45,13 @@ func testSortHundred_withloop(m IMap, t *testing.T) {
 	rand.Seed(int64(time.Now().Nanosecond()))
 	assert := assertpkg.New(t)
 
-	for i := 1; i < 3; i++ {
-		testSortHundred(m, t, 100, 100*3)
+	for i := 1; i < 50; i++ {
+		testSortHundred(m, t, 200, 20*i)
 		m.Clear()
 		assert.Equal(0, m.Len())
 
 		//
-		testSortHundred(MakeThreadSafe(m), t, 100, 100*3)
+		testSortHundred(MakeThreadSafe(m), t, 200, 20*i)
 		m.Clear()
 		assert.Equal(0, m.Len())
 	}
