@@ -7,7 +7,7 @@ import (
 	"github.com/steveyen/gtreap"
 )
 
-func gtreapMap(comp func(a, b interface{}) int) *_GtreapMap {
+func MapGtreap(comp func(a, b interface{}) int) *_GtreapMap {
 	o := new(_GtreapMap)
 	o.m = gtreap.NewTreap(func(a, b interface{}) int {
 		return comp(a.(*_kv).k, b.(*_kv).k)
