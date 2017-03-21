@@ -1,6 +1,8 @@
 package mapk
 
 import (
+	"bytes"
+	"fmt"
 	"strings"
 )
 
@@ -28,3 +30,12 @@ type _kv struct {
 }
 
 type _kvslist []*_kv
+
+func (this _kvslist) String() string {
+	buf := bytes.NewBufferString("[")
+	for _, v := range this {
+		buf.WriteString(fmt.Sprintf("(%v,%v)", v.k, v.v))
+	}
+	buf.WriteString("]")
+	return buf.String()
+}

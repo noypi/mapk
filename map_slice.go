@@ -40,23 +40,18 @@ func (this *_SliceMap) Put(k, v interface{}) {
 	}
 
 	i := this.find(k)
-	if i < len(this.kvs) {
+	if i >= len(this.kvs) {
+		this.kvs = append(this.kvs, &_kv{k: k, v: v})
+		return
+	}
+
+	if 0 == this.cmp(this.kvs[i].k, k) {
 		this.kvs[i].v = v
 		return
 	}
 
-	i = sort.Search(len(this.kvs), func(i int) bool {
-		return 0 < this.cmp(this.kvs[i].k, k)
-	})
-	if i < len(this.kvs) {
-		// insert at
-		i = i + 1
-		this.kvs = append(this.kvs[:i], append(_kvslist{&_kv{k: k, v: v}}, this.kvs[i:]...)...)
-	} else {
-		this.kvs = append(this.kvs, &_kv{k: k, v: v})
-	}
+	this.kvs = append(this.kvs[:i], append(_kvslist{&_kv{k: k, v: v}}, this.kvs[i:]...)...)
 
-	//sort.Slice(this.kvs, this.less)
 }
 
 func (this *_SliceMap) Delete(k interface{}) {
@@ -69,16 +64,12 @@ func (this *_SliceMap) Delete(k interface{}) {
 }
 
 func (this _SliceMap) Has(k interface{}) bool {
-	return this.find(k) < len(this.kvs)
+	i := this.find(k)
+	return i < len(this.kvs) && 0 == this.cmp(this.kvs[i].k, k)
 }
 
 func (this _SliceMap) EachFrom(kprefix interface{}, cb func(k, v interface{}) bool) {
 	i := this.find(kprefix)
-	if i >= len(this.kvs) {
-		i = sort.Search(len(this.kvs), func(i int) bool {
-			return 0 < this.cmp(this.kvs[i].k, kprefix)
-		})
-	}
 	if i < len(this.kvs) {
 		for _, v := range this.kvs[i:] {
 			if !cb(v.k, v.v) {
@@ -101,3 +92,7 @@ func (this *_SliceMap) Clear() {
 }
 
 func (this _SliceMap) Len() int { return len(this.kvs) }
+
+func ContainerOfMapSlice(m IMap) _kvslist {
+	return m.(*_SliceMap).kvs
+}
