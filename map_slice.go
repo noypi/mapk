@@ -27,7 +27,7 @@ func (this _SliceMap) less(i, j int) bool {
 
 func (this _SliceMap) Get(k interface{}) interface{} {
 	i := this.find(k)
-	if i < len(this.kvs) {
+	if i < len(this.kvs) && 0 == this.cmp(this.kvs[i].k, k) {
 		return this.kvs[i].v
 	}
 	return nil
