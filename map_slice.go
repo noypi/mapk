@@ -56,11 +56,9 @@ func (this *_SliceMap) Put(k, v interface{}) {
 
 func (this *_SliceMap) Delete(k interface{}) {
 	i := this.find(k)
-	if i >= len(this.kvs) {
-		return
+	if i < len(this.kvs) && 0 == this.cmp(this.kvs[i].k, k) {
+		this.kvs = append(this.kvs[0:i], this.kvs[i+1:]...)
 	}
-
-	this.kvs = append(this.kvs[0:i], this.kvs[i+1:]...)
 }
 
 func (this _SliceMap) Has(k interface{}) bool {
