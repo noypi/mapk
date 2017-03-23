@@ -65,6 +65,15 @@ func TestMap01_Gtreap(t *testing.T) {
 	testmap01(m, t)
 }
 
+func TestMap01_ThreadSafe_GTreap(t *testing.T) {
+	m := mapk.MapGTreap(func(a, b interface{}) int {
+		return strings.Compare(a.(string), b.(string))
+	})
+
+	testmap01(mapk.MakeThreadSafe(m), t)
+}
+
+// Slice Tests
 func TestMap01_Slice(t *testing.T) {
 	m := mapk.MapSlice(func(a, b interface{}) int {
 		return strings.Compare(a.(string), b.(string))
@@ -81,13 +90,24 @@ func TestMap01_ThreadSafe_Slice(t *testing.T) {
 	testmap01(mapk.MakeThreadSafe(m), t)
 }
 
-func TestMap01_ThreadSafe_GTreap(t *testing.T) {
-	m := mapk.MapGTreap(func(a, b interface{}) int {
+// Heap tests
+func TestMap01_Heap(t *testing.T) {
+	m := mapk.MapHeap(func(a, b interface{}) int {
+		return strings.Compare(a.(string), b.(string))
+	})
+
+	testmap01(m, t)
+}
+
+func TestMap01_ThreadSafe_Heap(t *testing.T) {
+	m := mapk.MapHeap(func(a, b interface{}) int {
 		return strings.Compare(a.(string), b.(string))
 	})
 
 	testmap01(mapk.MakeThreadSafe(m), t)
 }
+
+// Bencmarks
 
 var ttDataTen01 = []_kv{
 	_kv{"sa1", "v100"},
@@ -193,6 +213,8 @@ func BenchmarkDeleteAdd5of10_GTreap(b *testing.B) {
 	}
 }
 
+// Slice Benchmarks
+
 func BenchmarkPutTen_Slice(b *testing.B) {
 	m := mapk.MapSlice(func(a, b interface{}) int {
 		return strings.Compare(a.(string), b.(string))
@@ -246,6 +268,64 @@ func BenchmarkDeleteAdd5of10_Slice(b *testing.B) {
 		benchmap_delete5of10(m)
 	}
 }
+
+// Heap benchmarks
+
+func BenchmarkPutTen_Heap(b *testing.B) {
+	m := mapk.MapHeap(func(a, b interface{}) int {
+		return strings.Compare(a.(string), b.(string))
+	})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		benchmap_putten(m)
+	}
+}
+
+func BenchmarkGetTen_Heap(b *testing.B) {
+	m := mapk.MapHeap(func(a, b interface{}) int {
+		return strings.Compare(a.(string), b.(string))
+	})
+	benchmap_putten(m)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		benchmap_getten(m)
+	}
+}
+
+func BenchmarkEachFrom7of10_Heap(b *testing.B) {
+	m := mapk.MapHeap(func(a, b interface{}) int {
+		return strings.Compare(a.(string), b.(string))
+	})
+	benchmap_putten(m)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		benchmap_eachfrompartial7of10(m)
+	}
+}
+
+func BenchmarkEachTen_Heap(b *testing.B) {
+	m := mapk.MapHeap(func(a, b interface{}) int {
+		return strings.Compare(a.(string), b.(string))
+	})
+	benchmap_putten(m)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		benchmap_eachten(m)
+	}
+}
+
+func BenchmarkDeleteAdd5of10_Heap(b *testing.B) {
+	m := mapk.MapHeap(func(a, b interface{}) int {
+		return strings.Compare(a.(string), b.(string))
+	})
+	benchmap_putten(m)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		benchmap_delete5of10(m)
+	}
+}
+
+// Native benchmarks
 
 func BenchmarkPutTen_Native(b *testing.B) {
 	m := map[string]string{}
